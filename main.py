@@ -1,6 +1,21 @@
 import tkinter as tk
 from tkinter import messagebox
 
+def open_choice_window():
+    """Apre la finestra per scegliere tra Long e Short."""
+    choice_window = tk.Tk()  # Crea una nuova finestra principale
+    choice_window.title("Choose Position")
+
+    tk.Label(choice_window, text="Select Position Type:", font=("Arial", 16)).pack(pady=20)
+
+    long_button = tk.Button(choice_window, text="Long", command=lambda: [choice_window.destroy(), open_position_window("Long")])
+    long_button.pack(pady=10)
+
+    short_button = tk.Button(choice_window, text="Short", command=lambda: [choice_window.destroy(), open_position_window("Short")])
+    short_button.pack(pady=10)
+
+    choice_window.mainloop()  # Avvia il loop principale della finestra di scelta
+    
 def validate_positive_number(input_value):
     """Controlla se l'input è un numero positivo."""
     try:
@@ -65,70 +80,76 @@ def on_submit(entries):
     else:
         messagebox.showerror("Input Non Valido", "Assicurati di inserire solo numeri positivi.")
 
-def main():
-    # Creazione della finestra principale
-    root = tk.Tk()
-    root.title("Crypto Futures GUI")
+def open_position_window(position_type):
+    # Apre la finestra per la posizione Long o Short
+    position_window = tk.Toplevel()
+    position_window.title(f"{position_type} Position")
     
     # Imposta il colore di sfondo della finestra
-    root.configure(bg='black')
+    position_window.configure(bg='black')
 
     # Creazione di un'etichetta con il testo "Hello, World!"
-    label = tk.Label(root, text="Hello, World!", font=("Arial", 24), bg='black', fg='white')
+    label = tk.Label(position_window, text="Buy Low -> Sell high", font=("Arial", 18), bg='black', fg='white')
     label.grid(row=0, column=0, columnspan=2, pady=20)
 
     # Dizionario per memorizzare i campi di input
     entries = {}
 
     # Etichette e campi di input
-    tk.Label(root, text="My Position's Capital:", bg='black', fg='white').grid(row=1, column=0, sticky='e', padx=5, pady=5)
-    entries['capital'] = tk.Entry(root)
+    tk.Label(position_window, text="My Position's Capital:", bg='black', fg='white').grid(row=1, column=0, sticky='e', padx=5, pady=5)
+    entries['capital'] = tk.Entry(position_window)
     entries['capital'].grid(row=1, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Current Asset Price:", bg='black', fg='white').grid(row=2, column=0, sticky='e', padx=5, pady=5)
-    entries['asset_price'] = tk.Entry(root)
+    tk.Label(position_window, text="Current Asset Price:", bg='black', fg='white').grid(row=2, column=0, sticky='e', padx=5, pady=5)
+    entries['asset_price'] = tk.Entry(position_window)
     entries['asset_price'].grid(row=2, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Top Price Prediction:", bg='black', fg='white').grid(row=3, column=0, sticky='e', padx=5, pady=5)
-    entries['top_prediction'] = tk.Entry(root)
+    tk.Label(position_window, text="Top Price Prediction:", bg='black', fg='white').grid(row=3, column=0, sticky='e', padx=5, pady=5)
+    entries['top_prediction'] = tk.Entry(position_window)
     entries['top_prediction'].grid(row=3, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Wanted Liquidation Price:", bg='black', fg='white').grid(row=4, column=0, sticky='e', padx=5, pady=5)
-    entries['liquidation_price'] = tk.Entry(root)
+    tk.Label(position_window, text="Wanted Liquidation Price:", bg='black', fg='white').grid(row=4, column=0, sticky='e', padx=5, pady=5)
+    entries['liquidation_price'] = tk.Entry(position_window)
     entries['liquidation_price'].grid(row=4, column=1, padx=5, pady=5)
 
     # Pulsante di invio
-    submit_button = tk.Button(root, text="Submit", command=lambda: on_submit(entries))
+    submit_button = tk.Button(position_window, text="Submit", command=lambda: on_submit(entries))
     submit_button.grid(row=5, column=0, columnspan=2, pady=20)
 
     # Caselle di testo per i risultati
-    tk.Label(root, text="Liquidation Percentage:", bg='black', fg='white').grid(row=6, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(position_window, text="Liquidation Percentage:", bg='black', fg='white').grid(row=6, column=0, sticky='e', padx=5, pady=5)
     global liquidation_percentage_entry
-    liquidation_percentage_entry = tk.Entry(root, state='readonly')
+    liquidation_percentage_entry = tk.Entry(position_window, state='readonly')
     liquidation_percentage_entry.grid(row=6, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Leverage:", bg='black', fg='white').grid(row=7, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(position_window, text="Leverage:", bg='black', fg='white').grid(row=7, column=0, sticky='e', padx=5, pady=5)
     global leverage_entry
-    leverage_entry = tk.Entry(root, state='readonly')
+    leverage_entry = tk.Entry(position_window, state='readonly')
     leverage_entry.grid(row=7, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Real Position Capital:", bg='black', fg='white').grid(row=8, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(position_window, text="Real Position Capital:", bg='black', fg='white').grid(row=8, column=0, sticky='e', padx=5, pady=5)
     global real_position_capital_entry
-    real_position_capital_entry = tk.Entry(root, state='readonly')
+    real_position_capital_entry = tk.Entry(position_window, state='readonly')
     real_position_capital_entry.grid(row=8, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Profit Percent %:", bg='black', fg='white').grid(row=9, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(position_window, text="Profit Percent %:", bg='black', fg='white').grid(row=9, column=0, sticky='e', padx=5, pady=5)
     global profit_percent_entry
-    profit_percent_entry = tk.Entry(root, state='readonly')
+    profit_percent_entry = tk.Entry(position_window, state='readonly')
     profit_percent_entry.grid(row=9, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Profit:", bg='black', fg='white').grid(row=10, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(position_window, text="Profit:", bg='black', fg='white').grid(row=10, column=0, sticky='e', padx=5, pady=5)
     global profit_entry
-    profit_entry = tk.Entry(root, state='readonly')
+    profit_entry = tk.Entry(position_window, state='readonly')
     profit_entry.grid(row=10, column=1, padx=5, pady=5)
 
     # Avvio del loop principale della GUI
-    root.mainloop()
+    position_window.mainloop()
+
+def main():
+    root = tk.Tk()  # Crea la finestra principale
+    root.withdraw()  # Nascondi la finestra principale
+    open_choice_window()  # Inizializza la finestra di scelta
+    root.mainloop()  # Avvia il loop principale della finestra principale
 
 if __name__ == "__main__":
     main()
