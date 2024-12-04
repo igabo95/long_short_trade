@@ -24,12 +24,61 @@ def validate_positive_number(input_value):
     except ValueError:
         return False  # Non è un numero valido
 
-def calculate_values(entries):
+def calculate_values_short(entries):
     """Calcola i valori e aggiorna le caselle di testo."""
     try:
         capital = float(entries['capital'].get())
         asset_price = float(entries['asset_price'].get())
-        top_prediction = float(entries['top_prediction'].get())
+        bottom_prediction = float(entries['price_prediction'].get())
+        liquidation_price = float(entries['liquidation_price'].get())
+
+        # Calcoli
+        liquidation_percentage = liquidation_price / asset_price
+        leverage = 1.0 / ( liquidation_percentage - 1 )
+        real_position_capital = capital * leverage
+
+        short_ratio = bottom_prediction/asset_price # Rapporto tra prezzo dell'asset dopo il price drop e prezzo al momento dell'apertura della position
+        final_short_price = short_ratio * real_position_capital # Prezzo al quale compro l'asset dopo il suo Price drop
+        profit = real_position_capital - final_short_price - capital
+        profit_percent = (capital + profit) / capital
+
+        # Aggiorna le caselle di testo
+        liquidation_percentage_entry.config(state='normal')  # Abilita la modifica
+        liquidation_percentage_entry.delete(0, tk.END)
+        liquidation_percentage_entry.insert(0, f"{liquidation_percentage:.2%}")
+        liquidation_percentage_entry.config(state='readonly')  # Rendi di nuovo sola lettura
+
+        leverage_entry.config(state='normal')  # Abilita la modifica
+        leverage_entry.delete(0, tk.END)
+        leverage_entry.insert(0, f"x{leverage:.2f}")
+        leverage_entry.config(state='readonly')  # Rendi di nuovo sola lettura
+
+        real_position_capital_entry.config(state='normal')  # Abilita la modifica
+        real_position_capital_entry.delete(0, tk.END)
+        real_position_capital_entry.insert(0, f"{real_position_capital:.2f} USD")
+        real_position_capital_entry.config(state='readonly')  # Rendi di nuovo sola lettura
+
+        profit_percent_entry.config(state='normal')  # Abilita la modifica
+        profit_percent_entry.delete(0, tk.END)
+        profit_percent_entry.insert(0, f"{profit_percent:.2%}")
+        profit_percent_entry.config(state='readonly')  # Rendi di nuovo sola lettura
+
+        profit_entry.config(state='normal')  # Abilita la modifica
+        profit_entry.delete(0, tk.END)
+        profit_entry.insert(0, f"{profit:.2f} USD")
+        profit_entry.config(state='readonly')  # Rendi di nuovo sola lettura
+
+    except ZeroDivisionError:
+        messagebox.showerror("Errore", "Il Liquidation Price non può essere zero.")
+    except Exception as e:
+        messagebox.showerror("Errore", str(e))
+
+def calculate_values_long(entries):
+    """Calcola i valori e aggiorna le caselle di testo."""
+    try:
+        capital = float(entries['capital'].get())
+        asset_price = float(entries['asset_price'].get())
+        top_prediction = float(entries['price_prediction'].get())
         liquidation_price = float(entries['liquidation_price'].get())
 
         # Calcoli
@@ -70,17 +119,35 @@ def calculate_values(entries):
     except Exception as e:
         messagebox.showerror("Errore", str(e))
 
-def on_submit(entries):
+def on_submit(entries, position_type):
     """Funzione chiamata quando si preme il pulsante di invio."""
-    if (validate_positive_number(entries['capital'].get()) and 
-        validate_positive_number(entries['asset_price'].get()) and 
-        int(entries['liquidation_price'].get()) < int(entries['asset_price'].get()) and
-        int(entries['asset_price'].get()) < int(entries['top_prediction'].get())):
-        calculate_values(entries)
-    else:
-        messagebox.showerror("Input Non Valido", "Assicurati di inserire solo numeri positivi.")
+    if position_type == "Long":    
+        if (validate_positive_number(entries['capital'].get()) and 
+            validate_positive_number(entries['asset_price'].get()) and 
+            float(entries['liquidation_price'].get()) < float(entries['asset_price'].get()) and
+            float(entries['asset_price'].get()) < float(entries['price_prediction'].get())):
+            calculate_values_long(entries)
+        else:
+            messagebox.showerror("Input Non Valido", "Assicurati di inserire solo numeri positivi.")
+    elif position_type == "Short":
+        if (validate_positive_number(entries['capital'].get()) and 
+            validate_positive_number(entries['asset_price'].get()) and 
+            float(entries['liquidation_price'].get()) > float(entries['asset_price'].get()) and
+            float(entries['asset_price'].get()) > float(entries['price_prediction'].get())):
+            calculate_values_short(entries)
+        else:
+            messagebox.showerror("Input Non Valido", "Assicurati di inserire solo numeri positivi.")
 
 def open_position_window(position_type):
+    
+    # different labels depending on position type
+    if position_type == "Long":
+        window_title = "Buy low -> Sell high"
+        prediction_string = "Top Price Prediction:"
+    elif position_type == "Short":
+        window_title = "Sell high -> Buy low"
+        prediction_string = "Bottom Price Prediction:"
+    
     # Apre la finestra per la posizione Long o Short
     position_window = tk.Toplevel()
     position_window.title(f"{position_type} Position")
@@ -88,8 +155,8 @@ def open_position_window(position_type):
     # Imposta il colore di sfondo della finestra
     position_window.configure(bg='black')
 
-    # Creazione di un'etichetta con il testo "Hello, World!"
-    label = tk.Label(position_window, text="Buy Low -> Sell high", font=("Arial", 18), bg='black', fg='white')
+    # Creazione di un'etichetta
+    label = tk.Label(position_window, text=window_title, font=("Arial", 18), bg='black', fg='white')
     label.grid(row=0, column=0, columnspan=2, pady=20)
 
     # Dizionario per memorizzare i campi di input
@@ -104,16 +171,16 @@ def open_position_window(position_type):
     entries['asset_price'] = tk.Entry(position_window)
     entries['asset_price'].grid(row=2, column=1, padx=5, pady=5)
 
-    tk.Label(position_window, text="Top Price Prediction:", bg='black', fg='white').grid(row=3, column=0, sticky='e', padx=5, pady=5)
-    entries['top_prediction'] = tk.Entry(position_window)
-    entries['top_prediction'].grid(row=3, column=1, padx=5, pady=5)
+    tk.Label(position_window, text=prediction_string, bg='black', fg='white').grid(row=3, column=0, sticky='e', padx=5, pady=5)
+    entries['price_prediction'] = tk.Entry(position_window)
+    entries['price_prediction'].grid(row=3, column=1, padx=5, pady=5)
 
     tk.Label(position_window, text="Wanted Liquidation Price:", bg='black', fg='white').grid(row=4, column=0, sticky='e', padx=5, pady=5)
     entries['liquidation_price'] = tk.Entry(position_window)
     entries['liquidation_price'].grid(row=4, column=1, padx=5, pady=5)
 
     # Pulsante di invio
-    submit_button = tk.Button(position_window, text="Submit", command=lambda: on_submit(entries))
+    submit_button = tk.Button(position_window, text="Submit", command=lambda: on_submit(entries, position_type))
     submit_button.grid(row=5, column=0, columnspan=2, pady=20)
 
     # Caselle di testo per i risultati
