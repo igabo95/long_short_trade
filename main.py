@@ -63,43 +63,43 @@ def main():
 
     # Creazione di un'etichetta con il testo "Hello, World!"
     label = tk.Label(root, text="Hello, World!", font=("Arial", 24), bg='black', fg='white')
-    label.pack(pady=20)
+    label.grid(row=0, column=0, columnspan=2, pady=20)
 
     # Dizionario per memorizzare i campi di input
     entries = {}
 
     # Etichette e campi di input
-    tk.Label(root, text="My Capital:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="My Capital:", bg='black', fg='white').grid(row=1, column=0, sticky='e', padx=5, pady=5)
     entries['capital'] = tk.Entry(root)
-    entries['capital'].pack(pady=5)
+    entries['capital'].grid(row=1, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Current Asset Price:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="Current Asset Price:", bg='black', fg='white').grid(row=2, column=0, sticky='e', padx=5, pady=5)
     entries['asset_price'] = tk.Entry(root)
-    entries['asset_price'].pack(pady=5)
+    entries['asset_price'].grid(row=2, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Wanted Liquidation Price:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="Wanted Liquidation Price:", bg='black', fg='white').grid(row=3, column=0, sticky='e', padx=5, pady=5)
     entries['liquidation_price'] = tk.Entry(root)
-    entries['liquidation_price'].pack(pady=5)
+    entries['liquidation_price'].grid(row=3, column=1, padx=5, pady=5)
 
     # Pulsante di invio
     submit_button = tk.Button(root, text="Submit", command=lambda: on_submit(entries))
-    submit_button.pack(pady=20)
+    submit_button.grid(row=4, column=0, columnspan=2, pady=20)
 
     # Caselle di testo per i risultati
-    tk.Label(root, text="Liquidation Percentage:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="Liquidation Percentage:", bg='black', fg='white').grid(row=5, column=0, sticky='e', padx=5, pady=5)
     global liquidation_percentage_entry
     liquidation_percentage_entry = tk.Entry(root, state='readonly')
-    liquidation_percentage_entry.pack(pady=5)
+    liquidation_percentage_entry.grid(row=5, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Leverage:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="Leverage:", bg='black', fg='white').grid(row=6, column=0, sticky='e', padx=5, pady=5)
     global leverage_entry
     leverage_entry = tk.Entry(root, state='readonly')
-    leverage_entry.pack(pady=5)
+    leverage_entry.grid(row=6, column=1, padx=5, pady=5)
 
-    tk.Label(root, text="Real Position Capital:", bg='black', fg='white').pack(pady=5)
+    tk.Label(root, text="Real Position Capital:", bg='black', fg='white').grid(row=7, column=0, sticky='e', padx=5, pady=5)
     global real_position_capital_entry
     real_position_capital_entry = tk.Entry(root, state='readonly')
-    real_position_capital_entry.pack(pady=5)
+    real_position_capital_entry.grid(row=7, column=1, padx=5, pady=5)
 
     # Avvio del loop principale della GUI
     root.mainloop()
