@@ -3,8 +3,6 @@ from tkinter import messagebox
 
 def validate_positive_number(input_value):
     """Controlla se l'input è un numero positivo."""
-    if input_value == "":
-        return True  # Permetti input vuoto
     try:
         value = float(input_value)
         return value > 0  # Controlla se il numero è positivo
@@ -83,7 +81,7 @@ def main():
     entries = {}
 
     # Etichette e campi di input
-    tk.Label(root, text="My Capital:", bg='black', fg='white').grid(row=1, column=0, sticky='e', padx=5, pady=5)
+    tk.Label(root, text="My Position's Capital:", bg='black', fg='white').grid(row=1, column=0, sticky='e', padx=5, pady=5)
     entries['capital'] = tk.Entry(root)
     entries['capital'].grid(row=1, column=1, padx=5, pady=5)
 
