@@ -10,7 +10,7 @@ def main():
     root.configure(bg='black')
 
     # Creazione di un'etichetta
-    label = tk.Label(root, text="Open Long Position", font=("Arial", 24), bg='black', fg='white')
+    label = tk.Label(root, text="Long Position", font=("Arial", 24), bg='black', fg='white')
     label.grid(row=0, column=0, columnspan=2, pady=20)
 
     # Create main Window
