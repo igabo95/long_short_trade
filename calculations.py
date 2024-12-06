@@ -5,8 +5,8 @@ def on_submit(entries, results):
     """Funzione chiamata quando si preme il pulsante di invio."""
     if (validate_positive_number(entries['capital'].get()) and 
         validate_positive_number(entries['asset_price'].get()) and 
-        int(entries['liquidation_price'].get()) < int(entries['asset_price'].get()) and
-        int(entries['asset_price'].get()) < int(entries['top_prediction'].get())):
+        float(entries['liquidation_price'].get()) > float(entries['asset_price'].get()) and
+        float(entries['asset_price'].get()) > float(entries['bottom_prediction'].get())):
         calculate_values(entries, results)
     else:
         messagebox.showerror("Input Non Valido", "Assicurati di inserire solo numeri positivi.")
@@ -24,20 +24,20 @@ def calculate_values(entries, results):
     try:
         capital = float(entries['capital'].get())
         asset_price = float(entries['asset_price'].get())
-        top_prediction = float(entries['top_prediction'].get())
+        bottom_prediction = float(entries['bottom_prediction'].get())
         liquidation_price = float(entries['liquidation_price'].get())
 
         # Calcoli
-        liquidation_percentage = 1 - (liquidation_price / asset_price)
+        liquidation_percentage = (liquidation_price / asset_price) - 1
         leverage = 1.0 / liquidation_percentage
         real_position_capital = capital * leverage
-        profit = real_position_capital * (top_prediction / asset_price) - real_position_capital
+        profit = (real_position_capital / asset_price) * (asset_price - bottom_prediction)
         profit_percent = profit / capital
 
         # Aggiorna le caselle di testo
         results['liquidation_percentage'].config(state='normal')  # Abilita la modifica
         results['liquidation_percentage'].delete(0, tk.END)
-        results['liquidation_percentage'].insert(0, f"-{liquidation_percentage:.2%}")
+        results['liquidation_percentage'].insert(0, f"+{liquidation_percentage:.2%}")
         results['liquidation_percentage'].config(state='readonly')  # Rendi di nuovo sola lettura
 
         results['leverage'].config(state='normal')  # Abilita la modifica
