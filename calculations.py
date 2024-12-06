@@ -31,13 +31,13 @@ def calculate_values(entries, results):
         liquidation_percentage = 1 - (liquidation_price / asset_price)
         leverage = 1.0 / liquidation_percentage
         real_position_capital = capital * leverage
-        profit_percent = top_prediction / asset_price
-        profit = real_position_capital * (profit_percent - 1)
+        profit = real_position_capital * (top_prediction / asset_price) - real_position_capital
+        profit_percent = profit / capital
 
         # Aggiorna le caselle di testo
         results['liquidation_percentage'].config(state='normal')  # Abilita la modifica
         results['liquidation_percentage'].delete(0, tk.END)
-        results['liquidation_percentage'].insert(0, f"{liquidation_percentage:.2%}")
+        results['liquidation_percentage'].insert(0, f"-{liquidation_percentage:.2%}")
         results['liquidation_percentage'].config(state='readonly')  # Rendi di nuovo sola lettura
 
         results['leverage'].config(state='normal')  # Abilita la modifica
